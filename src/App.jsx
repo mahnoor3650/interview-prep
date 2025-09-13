@@ -14,6 +14,8 @@ import Layout from './components/Layout/Layout';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
 import Dashboard from './pages/Dashboard/Dashboard';
 import InterviewSetup from './pages/Interview/InterviewSetup';
 import InterviewSession from './pages/Interview/InterviewSession';
@@ -23,6 +25,7 @@ import LoadingSpinner from './components/UI/LoadingSpinner';
 import ApiTest from './components/Test/ApiTest';
 import SpeechTest from './pages/Test/SpeechTest';
 import SpeechToTextTest from './pages/Test/SpeechToTextTest';
+import PasswordResetTest from './pages/Test/PasswordResetTest';
 import { SpeechRecognitionProvider } from './components/Providers/SpeechRecognitionProvider';
 
 // Industry Practice: App initialization component
@@ -99,6 +102,16 @@ function AppContent() {
               isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />
             }
           />
+          <Route
+            path="/forgot-password"
+            element={
+              isAuthenticated ? <Navigate to="/dashboard" replace /> : <ForgotPassword />
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={<ResetPassword />}
+          />
 
           {/* Protected Routes */}
           <Route
@@ -118,6 +131,7 @@ function AppContent() {
             <Route path="test" element={<ApiTest />} />
             <Route path="speech-test" element={<SpeechTest />} />
             <Route path="speech-to-text-test" element={<SpeechToTextTest />} />
+            <Route path="password-reset-test" element={<PasswordResetTest />} />
           </Route>
 
           {/* Catch all route */}

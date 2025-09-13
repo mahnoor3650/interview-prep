@@ -119,6 +119,46 @@ export const getCurrentUser = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async (email, { rejectWithValue }) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      return { message: "Password reset email sent successfully" };
+    } catch (error) {
+      return rejectWithValue({
+        message: error.message || "Failed to send reset email",
+        code: "RESET_PASSWORD_ERROR",
+      });
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  "auth/updatePassword",
+  async (newPassword, { rejectWithValue }) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      return { message: "Password updated successfully" };
+    } catch (error) {
+      return rejectWithValue({
+        message: error.message || "Failed to update password",
+        code: "UPDATE_PASSWORD_ERROR",
+      });
+    }
+  }
+);
+
 // Industry Practice: Normalized initial state
 const initialState = {
   user: null,
@@ -135,6 +175,8 @@ const initialState = {
     signUp: false,
     logout: false,
     getCurrentUser: false,
+    resetPassword: false,
+    updatePassword: false,
   },
 };
 
@@ -250,6 +292,34 @@ const authSlice = createSlice({
             !action.payload?.message?.includes('Invalid JWT')) {
           state.error = action.payload;
         }
+      })
+
+      // Reset password cases
+      .addCase(resetPassword.pending, (state) => {
+        state.loadingStates.resetPassword = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.loadingStates.resetPassword = false;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loadingStates.resetPassword = false;
+        state.error = action.payload;
+      })
+
+      // Update password cases
+      .addCase(updatePassword.pending, (state) => {
+        state.loadingStates.updatePassword = true;
+        state.error = null;
+      })
+      .addCase(updatePassword.fulfilled, (state) => {
+        state.loadingStates.updatePassword = false;
+        state.error = null;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.loadingStates.updatePassword = false;
+        state.error = action.payload;
       });
   },
 });

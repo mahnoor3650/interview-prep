@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useUser } from '../../hooks/redux';
 import { useDispatch } from 'react-redux';
-import { updateUserProfile } from '../../store/slices/authSlice';
+import { updateUserProfile, updatePassword } from '../../store/slices/authSlice';
 import { databaseService } from '../../services/supabase';
+import LoadingSpinner from '../../components/UI/LoadingSpinner';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
   const user = useUser();
@@ -14,6 +16,8 @@ const Profile = () => {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [profileData, setProfileData] = useState(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const {
     register,
@@ -28,6 +32,21 @@ const Profile = () => {
       skills: '',
     },
   });
+
+  const {
+    register: registerPassword,
+    handleSubmit: handlePasswordSubmit,
+    formState: { errors: passwordErrors },
+    reset: resetPassword,
+    watch: watchPassword,
+  } = useForm({
+    defaultValues: {
+      newPassword: '',
+      confirmPassword: '',
+    },
+  });
+
+  const newPassword = watchPassword('newPassword');
 
   // Load user profile data from Supabase
   useEffect(() => {
@@ -131,6 +150,26 @@ const Profile = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const onPasswordChange = async (data) => {
+    if (data.newPassword !== data.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      await dispatch(updatePassword(data.newPassword));
+      toast.success('Password updated successfully!');
+      setShowChangePassword(false);
+      resetPassword();
+    } catch (error) {
+      console.error('Password update error:', error);
+      toast.error(error.message || 'Failed to update password. Please try again.');
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -321,7 +360,10 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-900">Change Password</h3>
                 <p className="text-sm text-gray-500">Update your account password</p>
               </div>
-              <button className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <button 
+                onClick={() => setShowChangePassword(true)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
                 Change
               </button>
             </div>
@@ -342,6 +384,103 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Change Password</h3>
+                <button
+                  onClick={() => {
+                    setShowChangePassword(false);
+                    resetPassword();
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handlePasswordSubmit(onPasswordChange)} className="space-y-4">
+                <div>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+                    New Password
+                  </label>
+                  <input
+                    {...registerPassword('newPassword', {
+                      required: 'New password is required',
+                      minLength: {
+                        value: 6,
+                        message: 'Password must be at least 6 characters',
+                      },
+                      pattern: {
+                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                        message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+                      },
+                    })}
+                    type="password"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Enter new password"
+                  />
+                  {passwordErrors.newPassword && (
+                    <p className="mt-1 text-sm text-red-600">{passwordErrors.newPassword.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                    Confirm New Password
+                  </label>
+                  <input
+                    {...registerPassword('confirmPassword', {
+                      required: 'Please confirm your password',
+                      validate: (value) =>
+                        value === newPassword || 'Passwords do not match',
+                    })}
+                    type="password"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Confirm new password"
+                  />
+                  {passwordErrors.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-600">{passwordErrors.confirmPassword.message}</p>
+                  )}
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowChangePassword(false);
+                      resetPassword();
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isChangingPassword}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  >
+                    {isChangingPassword ? (
+                      <>
+                        <LoadingSpinner size="small" />
+                        <span className="ml-2">Updating...</span>
+                      </>
+                    ) : (
+                      'Update Password'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
