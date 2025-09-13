@@ -154,7 +154,7 @@
 
 3. **Set up environment variables**
    ```bash
-   cp .env.example .env.local
+   cp .env .env.local
    ```
    
    Fill in your environment variables:
@@ -185,22 +185,7 @@ npm run preview
 
 ---
 
-## 📱 **Screenshots**
 
-<div align="center">
-
-### **Dashboard Overview**
-![Dashboard](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=Dashboard+Overview)
-
-### **Interview Session**
-![Interview Session](https://via.placeholder.com/800x400/059669/FFFFFF?text=Interview+Session)
-
-### **Mobile Responsive**
-![Mobile View](https://via.placeholder.com/400x800/DC2626/FFFFFF?text=Mobile+View)
-
-</div>
-
----
 
 ## 🎯 **Use Cases**
 
@@ -277,66 +262,3 @@ OpenAI GPT-3.5-turbo ($5 free credits)
 </div>
 
 ---
-
-## 🤝 **Contributing**
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### **Development Workflow**
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### **Code Standards**
-
-- Follow ESLint configuration
-- Write meaningful commit messages
-- Add tests for new features
-- Update documentation as needed
-
----
-
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 **Acknowledgments**
-
-- **OpenAI** for providing powerful AI capabilities
-- **Supabase** for excellent backend services
-- **Vercel** for seamless deployment
-- **Tailwind CSS** for beautiful styling
-- **React Community** for amazing tools and libraries
-
----
-
-## 📞 **Contact & Support**
-
-<div align="center">
-
-**Project Maintainer**: [Your Name](https://github.com/yourusername)
-
-[![Email](https://img.shields.io/badge/Email-contact@prepmate-ai.com-blue?style=flat-square&logo=gmail)](mailto:contact@prepmate-ai.com)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/yourusername)
-[![Twitter](https://img.shields.io/badge/Twitter-Follow-blue?style=flat-square&logo=twitter)](https://twitter.com/yourusername)
-
-**⭐ Star this repository if you found it helpful!**
-
-</div>
-
----
-
-<div align="center">
-
-**Made with ❤️ by [Your Name]**
-
-![GitHub stars](https://img.shields.io/github/stars/yourusername/prepmate-ai?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/prepmate-ai?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/prepmate-ai?style=social)
-
-</div>

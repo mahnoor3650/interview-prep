@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { store } from './store';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
-import { getCurrentUser } from './store/slices/authSlice';
+import { getCurrentUser, clearError } from './store/slices/authSlice';
 import { loadInterviewHistory } from './store/slices/interviewSlice';
 import { selectIsInitialized } from './store/slices/authSlice';
 
@@ -32,6 +32,9 @@ function AppInitializer({ children }) {
   const isInitialized = useAppSelector(selectIsInitialized);
 
   useEffect(() => {
+    // Clear any existing auth errors on app initialization
+    dispatch(clearError());
+    
     // Check if user is already authenticated on app load
     const checkAuth = async () => {
       try {

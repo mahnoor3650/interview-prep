@@ -89,7 +89,17 @@ export const getCurrentUser = createAsyncThunk(
         data: { user },
         error,
       } = await supabase.auth.getUser();
-      if (error) throw error;
+      
+      // If there's an error, only reject if it's not a "not authenticated" error
+      if (error) {
+        // Don't treat "not authenticated" as an error - this is normal for login/signup pages
+        if (error.message?.includes('session_not_found') || 
+            error.message?.includes('Auth session missing') ||
+            error.message?.includes('Invalid JWT')) {
+          return null; // Return null instead of rejecting
+        }
+        throw error;
+      }
 
       if (!user) return null;
 
@@ -233,7 +243,13 @@ const authSlice = createSlice({
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loadingStates.getCurrentUser = false;
         state.isInitialized = true;
-        state.error = action.payload;
+        // Only set error if it's not a "not authenticated" error
+        if (action.payload?.code !== 'GET_USER_ERROR' || 
+            !action.payload?.message?.includes('session_not_found') &&
+            !action.payload?.message?.includes('Auth session missing') &&
+            !action.payload?.message?.includes('Invalid JWT')) {
+          state.error = action.payload;
+        }
       });
   },
 });
